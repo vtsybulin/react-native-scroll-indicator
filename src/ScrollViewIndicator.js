@@ -32,7 +32,15 @@ export default ({
         setScrollIndicatorContainerHeight,
     ] = useState(1);
 
-    const handleScroll = ({ contentOffset }) => {
+    const handleScroll = (value) => {
+        const {onScroll} = props;
+        const {nativeEvent: { contentOffset }} = value;
+        /**
+         * Propagating onScroll event upwards in case onScroll prop is provided 
+         */
+        if (onScroll && typeof onScroll === 'function') {
+            onScroll(val);
+        }
         //Calculation scroll indicator position based on child height and scrollView view height)
         const movePercent =
             contentOffset.y /
@@ -91,7 +99,7 @@ export default ({
                 onLayout={e =>
                     setVisibleScrollPartHeight(e.nativeEvent.layout.height)
                 }
-                onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
+                onScroll={handleScroll}
                 scrollEventThrottle={16}
                 onMomentumScrollEnd={() => runHideTimer()}
                 onScrollBeginDrag={() => showIndicator()}
